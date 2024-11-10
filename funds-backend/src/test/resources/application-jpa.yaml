@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: fund
+  datasource:
+    url: ${spring.datasource.url}
+    username: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    locations: classpath:db/migration
+    clean-disabled: false
+    enabled: true
+    table: flyway_schema_history
+    clean-on-validation-error: true
+    mixed: true
+    default-schema: fund_schema

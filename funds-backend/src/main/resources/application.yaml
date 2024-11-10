@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: fund
+  datasource:
+    url: jdbc:postgresql://pgresql:5432/fund_db
+    username: fund_owner
+    password: admin123
+
+  flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    locations: classpath:db/migration
+    clean-disabled: false
+    enabled: true
+    table: fund_schema.flyway_schema_history
+    clean-on-validation-error: true
+    fail-on-missing-locations: true
+    default-schema: fund_schema

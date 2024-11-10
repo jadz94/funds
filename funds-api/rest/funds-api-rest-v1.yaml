@@ -1,0 +1,159 @@
+openapi: 3.0.3
+info:
+  title: FUNDS API
+  description: FUNDS API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/fund-backend
+    description: Local development server
+
+paths:
+  /accounts:
+    post:
+      tags:
+        - Account
+      summary: Add an account
+      description: Create or update an account from json payload
+      operationId: updateAccount
+      requestBody:
+        content:
+          application/vnd.fnd.account-api.v1+json:
+            schema:
+              $ref: '#/components/schemas/AccountDTO'
+        required: true
+      responses:
+        '200':
+          description: Account successfully loaded
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: processed
+        '400':
+          description: Invalid status value
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        default:
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    get:
+      tags:
+        - Account
+      summary: Get all accounts
+      description: This endpoint returns all accounts stored by this service with pagination
+      operationId: getAllAccounts
+      responses:
+        '200':
+          description: Successful operation. The response contains all account results.
+          content:
+            application/vnd.fnd.accounts-api.v1+json:
+              schema:
+                type:
+                  array
+                items:
+                  $ref: '#/components/schemas/AccountDTO'
+        '400':
+          description: Invalid status value
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        'default':
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /transfer:
+    post:
+      summary: Create a new funds transfer
+      operationId: transferFunds
+      tags:
+        - Fund Transfer
+      requestBody:
+        content:
+          application/vnd.fnd.transfer-api.v1+json:
+            schema:
+              $ref: '#/components/schemas/FundTransferDTO'
+      responses:
+        '200':
+          description: Funds Transfer is being processed
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+components:
+  schemas:
+    ApiError:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          example: '2024-07-08T14:06:49Z'
+        status:
+          type: string
+          example: '403'
+        error:
+          type: string
+          example: 'Forbidden'
+        message:
+          type: string
+          example: "you don't have right to call the API "
+        path:
+          type: string
+          example: '/transfer'
+    FundTransferDTO:
+      type: object
+      required:
+        - fromAccount
+        - toAccount
+        - amount
+      properties:
+        fromAccount:
+          $ref: '#/components/schemas/AccountTransferDTO'
+        toAccount:
+          $ref: '#/components/schemas/AccountTransferDTO'
+        amount:
+          type: number
+        amountCurrency:
+          type: string
+        reason:
+          type: string
+    AccountTransferDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        currency:
+          type: string
+    AccountDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        currency:
+          type: string
+        balance:
+          type: number

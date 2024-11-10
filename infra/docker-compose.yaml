@@ -1,0 +1,29 @@
+services:
+  db:
+    container_name: pgresql
+    image: postgres:16
+    restart: always
+    networks:
+      - fund-network
+    environment:
+      - POSTGRES_PASSWORD=root_password
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - '5432:5432'
+    volumes:
+      # copy the scripts to init the database.
+      - ./postgres/system-init-db.sql:/docker-entrypoint-initdb.d/system-init-db.sql
+
+  app:
+    container_name: funds-backend
+    image: funds/funds-backend
+    networks:
+      - fund-network
+    build:
+      context: ../funds-backend
+    ports:
+      - '8080:8080'
+
+networks:
+  fund-network:
+    driver: bridge
